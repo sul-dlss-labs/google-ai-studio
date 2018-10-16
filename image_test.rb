@@ -1,8 +1,10 @@
+# TODO use this gem instead: https://github.com/mejackreed/iiif_google_cv
+
 require 'json'
 require 'faraday'
 require 'google/cloud/vision'
-# Your Google Cloud Platform project ID
-project_id = "sul-ai-studio"
+
+project_id = "sul-ai-studio" # Your Google Cloud Platform project ID
 
 puts "Enter druid:"
 druid = gets.chomp
