@@ -1,17 +1,22 @@
 # Experiments in using the Google Cloud Video Intelligence API for Gitai videos
+#  Fetches a video from a google cloud bucket and submits to the Video Intelligence API, prints out labels and scence changes
 # https://cloud.google.com/video-intelligence
 
-puts "Enter filename to process:"
-filename = gets.chomp
+# setup:
+# gem install google-cloud   # see https://github.com/googleapis/google-cloud-ruby
 
-# NOTE: The video needs to be in the gitai bucket in the sul-ai-studio project and needs to be public ("allUsers" --> Reader)
 # You also need to have a valid .json service acccount key as described here:
 # see https://cloud.google.com/video-intelligence/docs/quickstart?authuser=1
 # and you need to set the "GOOGLE_APPLICATION_CREDENTIALS" environment file with the location of this json file
 
+# NOTE: The video needs to be in the gitai bucket in the sul-ai-studio project and needs to be public ("allUsers" --> Reader)
+
 # TODO: figure out how to authenticate to videos that are not in google cloud and/or that are not set to be public
 # TODO: figure out a better way of manging authorization to the google API without the use of local environment variables
 #             (e.g. perhaps via a shared config setting somewhere)
+
+puts "Enter filename to process:"
+filename = gets.chomp
 
 input_uri = "gs://gitai/#{filename}"
 
