@@ -16,6 +16,7 @@ require 'json'
 require 'faraday'
 require 'google/cloud/vision'
 require 'iiif_google_cv'
+require 'pp'
 
 project_id = "sul-ai-studio" # Your Google Cloud Platform project ID
 
@@ -30,17 +31,36 @@ puts
 client = IiifGoogleCv::Client.new(manifest_url: iiif_manifest_url)
 images = client.image_resources
 
-# Instantiates a client
-vision = Google::Cloud::Vision.new project: project_id
+begin
+  # Instantiates a client
+  vision = Google::Cloud::Vision.new project: project_id
 
-images.each do |image|
-  # Performs label detection on the image file
-  labels = vision.image(image).labels
+  images.each do |image|
+    # Performs label detection on the image file
+    results = vision.image(image)
 
-  puts "Labels for #{image}:"
-  labels.each do |label|
-    puts label.description
+    puts "Labels for #{image}:"
+    results.labels.each do |label|
+      puts "#{label.description} : #{label.score.round(2)}"
+    end
+    puts
+
+    puts "Web entities for #{image}:"
+    results.web.entities.each do |entity|
+      puts "#{entity.description} : #{entity.score.round(2)}"
+    end
+    puts
+
   end
-  puts
+
+rescue Google::Cloud::InvalidArgumentError => e
+
+  puts "ERROR"
+  puts "Google returned an error! (\"#{e.message}\".   Its likely this image is restricted in some way (either not viewable at all or only as a thumbnail)"
+
+rescue StandardError => e
+
+  puts "ERROR"
+  puts "Something bad happened and we don't know what. This might help: \"#{e.message}\"."
 
 end
