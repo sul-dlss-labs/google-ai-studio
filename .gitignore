@@ -1,0 +1,7 @@
+/tmp/
+/output/
+/log/
+*.json
+*.csv
+*.txt
+*.xml
