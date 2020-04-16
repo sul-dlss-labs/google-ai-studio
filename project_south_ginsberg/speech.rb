@@ -5,12 +5,12 @@
 
 # setup:
 # `export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service_account.json`
-# get the service account file from the Google Cloud Platform Dashboard:
+# You can get the service account file from the Google Cloud Platform Dashboard:
 #    API & Services --> Credentials --> "Manage Service Accounts" under "Service Account Keys" -->
 #       edit the key for "speech-to-text" --> "CREATE KEY" --> Download the JSON version
 # gem install google-cloud-speech
 # gem install google-cloud-storage
-# put audio files in project_south bucket in FLAC format (or set different bucket name below)
+# Put audio files in project_south bucket in FLAC format (or set different bucket name below)
 # ensure the bucket is accessible to the speech-to-text service account
 
 # run with `ruby project_south_ginsberg/speech.rb`
