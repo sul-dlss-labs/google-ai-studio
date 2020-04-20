@@ -16,11 +16,16 @@
 # run with `ruby project_south_ginsberg/speech.rb`
 
 # the bucket name to look for files in
-bucket_name = "audio_ua"
+bucket_name = "m0733_ginsberg_test_4_17_20"
 
 # optionally skip the following files in the bucket, set an empty array to include all files
 # (useful if you are running multiple times and have already completed some)
-skip = %w(bb169jj6514_sh gv425rr3983_b_sh)
+skip = [] # %w(bb169jj6514_sh gv425rr3983_b_sh)
+skip = %w(M0733_s11_ssB_b066_66A1_043_b_sl M0733_s11_ssB_b066_66A1_043DA_sh)
+
+timeout_in_hours = 3 # number of hours for timeout for speech recognition results
+
+# see https://github.com/googleapis/google-cloud-ruby/issues/2881 for enable_speaker_diarization help
 
 require "google/cloud/speech"
 require "google/cloud/storage"
@@ -28,13 +33,20 @@ require "fileutils"
 
 storage = Google::Cloud::Storage.new project_id: "sul-ai-studio"
 bucket  = storage.bucket bucket_name
-speech = Google::Cloud::Speech.new
+speech = Google::Cloud::Speech.new(version: :V1p1beta1)
+
+# see https://www.rubydoc.info/gems/google-gax/Google/Gax/BackoffSettings, we are only changing the defaul max timeout to greater > 1 hour
+backoff_settings = Google::Gax::BackoffSettings.new(10000,1.3,300000,0,0,0,timeout_in_hours * 60 * 60 * 1000)
+
 config = {
           encoding:          :FLAC,
           language_code:     "en-US",
           enable_automatic_punctuation: true,
-          enable_word_time_offsets: true
+          enable_word_time_offsets: true,
+          enable_speaker_diarization: true,
+          diarization_speaker_count: 2,
          }
+
 storage_paths = []
 
 raise "no files found in #{bucket_name}" if bucket.files.size == 0
@@ -74,7 +86,7 @@ storage_paths.each_with_index do |path, n|
     operation = speech.long_running_recognize config, audio
     puts "*** operation started"
 
-    operation.wait_until_done!
+    operation.wait_until_done!(backoff_settings: backoff_settings)
 
     raise operation.results.message if operation.error?
     puts "*** operation completed"
